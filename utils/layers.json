@@ -1,0 +1,120 @@
+[
+  {
+    "country": "nigeria",
+    "displayName": "Nigeria",
+    "themes": [
+      {
+        "name": "Hydrology",
+        "layers": [
+          {
+            "id": "rivers",
+            "title": "Major Rivers",
+            "source": "pg_tileserv",
+            "url": "/collections/nigeria.rivers/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Rivers and waterways across Nigeria",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-06-01"
+            }
+          },
+          {
+            "id": "flood_zones",
+            "title": "Flood Risk Zones",
+            "url": "/collections/nigeria.flood_zones/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Areas prone to seasonal flooding",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-05-15"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Infrastructure",
+        "layers": [
+          {
+            "id": "roads",
+            "title": "Road Network",
+            "url": "/collections/nigeria.roads/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Primary and secondary road networks",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-06-01"
+            }
+          },
+          {
+            "id": "power_lines",
+            "title": "Power Lines",
+            "url": "/collections/nigeria.power_lines/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Electrical transmission and distribution lines",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-04-20"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Population",
+        "layers": [
+          {
+            "id": "settlements",
+            "title": "Settlements",
+            "url": "/collections/nigeria.settlements/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Human settlements and population centers",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-06-01"
+            }
+          },
+          {
+            "id": "schools",
+            "title": "Educational Facilities",
+            "url": "/collections/nigeria.schools/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Schools and educational institutions",
+              "source": "GRID3 Nigeria",
+              "lastUpdated": "2024-05-01"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "ghana",
+    "displayName": "Ghana",
+    "themes": [
+      {
+        "name": "Hydrology",
+        "layers": [
+          {
+            "id": "rivers_gh",
+            "title": "Major Rivers",
+            "url": "/collections/ghana.rivers/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Rivers and waterways across Ghana",
+              "source": "GRID3 Ghana",
+              "lastUpdated": "2024-06-01"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Infrastructure",
+        "layers": [
+          {
+            "id": "roads_gh",
+            "title": "Road Network",
+            "url": "/collections/ghana.roads/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Primary and secondary road networks",
+              "source": "GRID3 Ghana",
+              "lastUpdated": "2024-06-01"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
