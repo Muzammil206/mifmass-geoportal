@@ -1,0 +1,58 @@
+{
+  "Navigation": {
+    "about": "À propos",
+    "documentation": "Documentation",
+    "resources": "Ressources"
+  },
+  "NotFound": {
+    "title": "404",
+    "description": "Page non trouvée",
+    "returnHome": "Retourner à l'accueil"
+  },
+  "MapComponent": {
+    "attribution": "© Contributeurs OpenStreetMap"
+  },
+  "Hero": {
+    "headline": "Explorez, visualisez et téléchargez des données géospatiales à travers l'Afrique de l'Ouest",
+    "description": "Accédez à des ensembles de données spatiales complets comprenant les rivières, les établissements, les infrastructures et plus encore au Nigeria, au Ghana, au Mali et au-delà.",
+    "searchPlaceholder": "Rechercher des ensembles de données ou des pays...",
+    "searchButton": "Rechercher",
+    "openMap": "Ouvrir le visualiseur de cartes",
+    "browseByTheme": "Parcourir par thème",
+    "exploreByCountry": "Explorer par pays"
+  },
+  "Features": {
+    "title": "Fonctionnalités puissantes",
+    "description": "Explorez, analysez et téléchargez des données géospatiales complètes pour les pays d'Afrique de l'Ouest avec notre plateforme intuitive.",
+    "MultiCountryCoverage": "Couverture multi-pays",
+    "MultiCountryCoverageDesc": "Accédez aux données spatiales pour le Nigeria, le Ghana, le Mali, le Bénin, le Burkina Faso, la Côte d'Ivoire et d'autres pays d'Afrique de l'Ouest.",
+    "MultipleExportFormats": "Formats d'exportation multiples",
+    "MultipleExportFormatsDesc": "Téléchargez des ensembles de données au format GeoJSON, Shapefile, CSV et GeoTIFF directement depuis le portail.",
+    "AdvancedFiltering": "Filtrage avancé",
+    "AdvancedFilteringDesc": "Filtrez par thème, pays, résolution et recherchez parmi des milliers d'ensembles de données spatiales facilement.",
+    "RealTimeUpdates": "Mises à jour en temps réel",
+    "RealTimeUpdatesDesc": "Accédez aux dernières données géospatiales avec des mises à jour régulières dans tous les pays africains.",
+    "CommunityDriven": "Piloté par la communauté",
+    "CommunityDrivenDesc": "Contribuez vos propres ensembles de données et collaborez avec des chercheurs et des scientifiques des données du monde entier.",
+    "DocumentationGuides": "Documentation et guides",
+    "DocumentationGuidesDesc": "Documentation complète, tutoriels et guides d'API pour les développeurs et les analystes.",
+    "additionalTitle": "Capacités supplémentaires",
+    "River": "Rivière",
+    "Settlement": "Établissement",
+    "Population": "Population",
+    "Category": "Catégorie",
+    "Natural": "Naturel",
+    "Infrastructure": "Infrastructure",
+    "Length": "Longueur",
+    "AdministrativeRegion": "Région Administrative",
+    "Level": "Niveau",
+    "Country": "Pays",
+    "Administrative": "Administratif",
+    "RoadNetwork": "Réseau Routier",
+    "ForestCoverage": "Couverture Forestière",
+    "Area": "Surface",
+    "PopulationDensity": "Densité de Population",
+    "Density": "Densité",
+    "Demographic": "Démographique"
+  }
+}

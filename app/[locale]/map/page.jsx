@@ -7,7 +7,7 @@ import InfoPanel from "@/components/info-panel"
 import DownloadModal from "@/components/download-modal"
 import CountryLayerSidebar from "@/components/country-layer-sidebar"
 import LayerMetadataPanel from "@/components/layer-metadata-panel"
-import { getAllLayers } from "../../utils/countries-layers"
+import { getAllLayers } from "@/utils/countries-layers"
 import dynamic from "next/dynamic";
 
 const MapComponent = dynamic(() => import("@/components/map-component"), {

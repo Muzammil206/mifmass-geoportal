@@ -2,42 +2,43 @@
 
 import { Globe, Download, Filter, Zap, Users, BookOpen } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 export default function FeaturesSection() {
+  const t = useTranslations()
   const mainFeatures = [
     {
       icon: Globe,
-      title: "Multi-Country Coverage",
-      description:
-        "Access spatial data for Nigeria, Ghana, Mali, Benin, Burkina Faso, Côte d'Ivoire and more West African countries.",
+      title: t('Features.MultiCountryCoverage'),
+      description: t('Features.MultiCountryCoverageDesc'),
     },
     {
       icon: Download,
-      title: "Multiple Export Formats",
-      description: "Download datasets in GeoJSON, Shapefile, CSV, and GeoTIFF formats directly from the portal.",
+      title: t('Features.MultipleExportFormats'),
+      description: t('Features.MultipleExportFormatsDesc'),
     },
     {
       icon: Filter,
-      title: "Advanced Filtering",
-      description: "Filter by theme, country, resolution, and search across thousands of spatial datasets with ease.",
+      title: t('Features.AdvancedFiltering'),
+      description: t('Features.AdvancedFilteringDesc'),
     },
   ]
 
   const secondaryFeatures = [
     {
       icon: Zap,
-      title: "Real-Time Updates",
-      description: "Access the latest geospatial data with regular updates across all African countries.",
+      title: t('Features.RealTimeUpdates'),
+      description: t('Features.RealTimeUpdatesDesc'),
     },
     {
       icon: Users,
-      title: "Community Driven",
-      description: "Contribute your own datasets and collaborate with researchers and data scientists worldwide.",
+      title: t('Features.CommunityDriven'),
+      description: t('Features.CommunityDrivenDesc'),
     },
     {
       icon: BookOpen,
-      title: "Documentation & Guides",
-      description: "Comprehensive documentation, tutorials, and API guides for developers and analysts.",
+      title: t('Features.DocumentationGuides'),
+      description: t('Features.DocumentationGuidesDesc'),
     },
   ]
 
@@ -51,11 +52,8 @@ export default function FeaturesSection() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Features */}
-        <h2 className="text-3xl font-bold text-foreground text-center mb-4">Powerful Features</h2>
-        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
-          Explore, analyze, and download comprehensive geospatial data for West African countries with our intuitive
-          platform.
-        </p>
+        <h2 className="text-3xl font-bold text-foreground text-center mb-4">{t('Features.title')}</h2>
+        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">{t('Features.description')}</p>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {mainFeatures.map((feature, idx) => (
@@ -73,7 +71,7 @@ export default function FeaturesSection() {
 
         {/* Secondary Features */}
         <div className="mt-12 pt-12 border-t border-border">
-          <h3 className="text-2xl font-bold text-foreground text-center mb-12">Additional Capabilities</h3>
+          <h3 className="text-2xl font-bold text-foreground text-center mb-12">{t('Features.additionalTitle')}</h3>
           <div className="grid md:grid-cols-3 gap-8">
             {secondaryFeatures.map((feature, idx) => (
               <motion.div

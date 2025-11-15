@@ -1,0 +1,58 @@
+{
+  "Navigation": {
+    "about": "About",
+    "documentation": "Documentation",
+    "resources": "Resources"
+  },
+  "NotFound": {
+    "title": "404",
+    "description": "Page not found",
+    "returnHome": "Return Home"
+  },
+  "MapComponent": {
+    "attribution": "© OpenStreetMap contributors"
+  },
+  "Hero": {
+    "headline": "Explore, Visualize, and Download Geospatial Data Across West Africa",
+    "description": "Access comprehensive spatial datasets including rivers, settlements, infrastructure, and more across Nigeria, Ghana, Mali, and beyond.",
+    "searchPlaceholder": "Search datasets or countries...",
+    "searchButton": "Search",
+    "openMap": "Open Map Viewer",
+    "browseByTheme": "Browse by Theme",
+    "exploreByCountry": "Explore by Country"
+  },
+  "Features": {
+    "title": "Powerful Features",
+    "description": "Explore, analyze, and download comprehensive geospatial data for West African countries with our intuitive platform.",
+    "MultiCountryCoverage": "Multi-Country Coverage",
+    "MultiCountryCoverageDesc": "Access spatial data for Nigeria, Ghana, Mali, Benin, Burkina Faso, Côte d'Ivoire and more West African countries.",
+    "MultipleExportFormats": "Multiple Export Formats",
+    "MultipleExportFormatsDesc": "Download datasets in GeoJSON, Shapefile, CSV, and GeoTIFF formats directly from the portal.",
+    "AdvancedFiltering": "Advanced Filtering",
+    "AdvancedFilteringDesc": "Filter by theme, country, resolution, and search across thousands of spatial datasets with ease.",
+    "RealTimeUpdates": "Real-Time Updates",
+    "RealTimeUpdatesDesc": "Access the latest geospatial data with regular updates across all African countries.",
+    "CommunityDriven": "Community Driven",
+    "CommunityDrivenDesc": "Contribute your own datasets and collaborate with researchers and data scientists worldwide.",
+    "DocumentationGuides": "Documentation & Guides",
+    "DocumentationGuidesDesc": "Comprehensive documentation, tutorials, and API guides for developers and analysts.",
+    "additionalTitle": "Additional Capabilities",
+    "River": "River",
+    "Settlement": "Settlement",
+    "Population": "Population",
+    "Category": "Category",
+    "Natural": "Natural",
+    "Infrastructure": "Infrastructure",
+    "Length": "Length",
+    "AdministrativeRegion": "Administrative Region",
+    "Level": "Level",
+    "Country": "Country",
+    "Administrative": "Administrative",
+    "RoadNetwork": "Road Network",
+    "ForestCoverage": "Forest Coverage",
+    "Area": "Area",
+    "PopulationDensity": "Population Density",
+    "Density": "Density",
+    "Demographic": "Demographic"
+  }
+}

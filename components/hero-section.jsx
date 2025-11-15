@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/routing"
 import { Search, Globe, Download, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 export default function HeroSection() {
+  const t = useTranslations()
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [showResults, setShowResults] = useState(false)
@@ -76,11 +78,10 @@ export default function HeroSection() {
           {/* Headline */}
           <motion.div variants={itemVariants} className="space-y-4">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold  text-balance  drop-shadow-lg">
-              Explore, Visualize, and Download Geospatial Data Across West Africa
+              {t('Hero.headline')}
             </h2>
             <p className="text-lg sm:text-xl  max-w-2xl mx-auto text-white  text-balance drop-shadow">
-              Access comprehensive spatial datasets including rivers, settlements, infrastructure, and more across
-              Nigeria, Ghana, Mali, and beyond.
+              {t('Hero.description')}
             </p>
           </motion.div>
 
@@ -89,7 +90,7 @@ export default function HeroSection() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
-                placeholder="Search datasets or countries..."
+                placeholder={t('Hero.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 onFocus={() => searchQuery && setShowResults(true)}
@@ -106,7 +107,7 @@ export default function HeroSection() {
                       <div>
                         <p className="text-sm font-medium text-foreground">{result.name}</p>
                         <p className="text-xs text-muted-foreground">
-                          {result.country} • {result.type}
+                          {result.country} • {t(`Features.${result.type}`)}
                         </p>
                       </div>
                       <span className="text-xs bg-accent/20 text-accent px-2 py-1 rounded">{result.type}</span>
@@ -115,7 +116,7 @@ export default function HeroSection() {
                 </div>
               )}
             </div>
-            <Button className="h-12 bg-primary hover:bg-primary/90 text-primary-foreground">Search</Button>
+            <Button className="h-12 bg-primary hover:bg-primary/90 text-primary-foreground">{t('Hero.searchButton')}</Button>
           </motion.div>
 
           {/* CTA Buttons */}
@@ -123,7 +124,7 @@ export default function HeroSection() {
             <Link href="/map">
               <Button size="lg" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 <Globe className="w-4 h-4 mr-2" />
-                Open Map Viewer
+                {t('Hero.openMap')}
               </Button>
             </Link>
             <Button
@@ -132,7 +133,7 @@ export default function HeroSection() {
               className="w-full sm:w-auto border-border text-foreground hover:bg-secondary/50 bg-card/80"
             >
               <Filter className="w-4 h-4 mr-2" />
-              Browse by Theme
+              {t('Hero.browseByTheme')}
             </Button>
             <Button
               size="lg"
@@ -140,7 +141,7 @@ export default function HeroSection() {
               className="w-full sm:w-auto border-border text-foreground hover:bg-secondary/50 bg-card/80"
             >
               <Download className="w-4 h-4 mr-2" />
-              Explore by Country
+              {t('Hero.exploreByCountry')}
             </Button>
           </motion.div>
         </motion.div>

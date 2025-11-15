@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
+import { useTranslations } from 'next-intl'
 
 export default function MapComponent({ layers, onFeatureClick }) {
+  const t = useTranslations()
   const mapRef = useRef(null)
   const layerGroupsRef = useRef({})
   const [isInitialized, setIsInitialized] = useState(false)
@@ -16,7 +18,7 @@ export default function MapComponent({ layers, onFeatureClick }) {
     const map = L.map("map").setView([9.0765, -4.4596], 5) // Center on West Africa
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors",
+      attribution: t('MapComponent.attribution'),
       maxZoom: 19,
     }).addTo(map)
 
@@ -88,10 +90,10 @@ function addRiversData(group, color, onFeatureClick) {
 
     polyline.on("click", () => {
       onFeatureClick({
-        type: "River",
-        name: `River ${idx + 1}`,
+        type: t('Features.River'),
+        name: `${t('Features.River')} ${idx + 1}`,
         length: `${(Math.random() * 500 + 100).toFixed(0)} km`,
-        category: "Natural",
+        category: t('Features.Natural'),
       })
     })
   })
