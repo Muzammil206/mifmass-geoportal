@@ -36,7 +36,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "components/ui/select.jsx", "app/[locale]/page.jsx"  ],
   "exclude": [
     "node_modules"
   ]
