@@ -1,7 +1,14 @@
-import { getRequestConfig } from "next-intl/server"
-import { routing } from "./routing"
-import { headers } from "next/headers"
+import { getRequestConfig } from "next-intl/server";
+import { routing } from "./routing";
+import { headers } from "next/headers";
 
+export function getLocales() {
+  return routing.locales;
+}
+
+export function getDefaultLocale() {
+  return routing.defaultLocale;
+}
 export default getRequestConfig(async (params: any) => {
   // Try to get pathname from params (preferred), otherwise fall back to header names used by Next
   let pathname: string | undefined = params?.pathname
