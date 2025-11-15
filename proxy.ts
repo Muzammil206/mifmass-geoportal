@@ -6,7 +6,7 @@ import { setRequestLocale } from "next-intl/server"
 
 const intlMiddleware = createMiddleware(routing)
 
-export async function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   const localeMatch = pathname.match(/^\/([a-z]{2})(?:\/|$)/)

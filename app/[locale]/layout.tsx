@@ -15,7 +15,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL 
+
 
   return {
     title:
@@ -26,7 +26,7 @@ export async function generateMetadata({
       locale === "fr"
         ? "Base de données régionale sur les inondations en Afrique de l'Ouest - Surveiller, enregistrer et gérer les événements liés aux inondations"
         : "Regional flood database for West Africa - Monitor, record, and manage flood events",
-    metadataBase: new URL(baseUrl),
+  
     icons: {
       icon: "/appi.ico",
     },
