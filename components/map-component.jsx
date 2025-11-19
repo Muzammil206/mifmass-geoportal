@@ -1,273 +1,218 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import L from "leaflet"
-import "leaflet/dist/leaflet.css"
-import { useTranslations } from 'next-intl'
+import Map, { Source, Layer, Popup } from 'react-map-gl/maplibre'
+import 'maplibre-gl/dist/maplibre-gl.css'
 
-export default function MapComponent({ layers, onFeatureClick }) {
-  const t = useTranslations()
+export default function GeoJSONMapComponent({ layers, onFeatureClick }) {
   const mapRef = useRef(null)
-  const layerGroupsRef = useRef({})
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [popupInfo, setPopupInfo] = useState(null)
+  const [loadedLayers, setLoadedLayers] = useState({})
+  const [loading, setLoading] = useState({})
 
-  // Initialize map
-  useEffect(() => {
-    if (typeof window === "undefined" || mapRef.current) return
+  const getGeoJSONUrl = (country, layerName) => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+    return `${baseUrl}/api/geojson/${country}/${layerName}`
+  }
 
-    const map = L.map("map").setView([9.0765, -4.4596], 5) // Center on West Africa
-
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: t('MapComponent.attribution'),
-      maxZoom: 19,
-    }).addTo(map)
-
-    mapRef.current = map
-    setIsInitialized(true)
-
-    return () => {
-      map.remove()
-      mapRef.current = null
+  const getLayerStyle = (layer) => {
+    const baseColor = layer.color || "#FF6B6B"
+    
+    switch(layer.geom_type?.toUpperCase()) {
+      case "MULTIPOLYGON":
+      case "POLYGON":
+        return {
+          type: 'fill',
+          paint: {
+            'fill-color': baseColor,
+            'fill-opacity': 0.6,
+            'fill-outline-color': '#333333'
+          }
+        }
+      
+      case "LINESTRING":
+      case "MULTILINESTRING":
+        return {
+          type: 'line',
+          paint: {
+            'line-color': baseColor,
+            'line-width': 3,
+            'line-opacity': 0.8
+          }
+        }
+      
+      case "POINT":
+      case "MULTIPOINT":
+        return {
+          type: 'circle',
+          paint: {
+            'circle-radius': 6,
+            'circle-color': baseColor,
+            'circle-opacity': 0.8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#ffffff'
+          }
+        }
+      
+      default:
+        return {
+          type: 'circle',
+          paint: {
+            'circle-radius': 6,
+            'circle-color': baseColor,
+            'circle-opacity': 0.8
+          }
+        }
     }
-  }, [])
+  }
 
-  // Update layers
+  // Load GeoJSON data for a layer
+  const loadLayerData = async (layer) => {
+    setLoading(prev => ({ ...prev, [layer.id]: true }))
+    
+    try {
+      const url = getGeoJSONUrl(layer.country, layer.name || layer.layer_name)
+      console.log(`Loading GeoJSON from: ${url}`)
+      
+      const response = await fetch(url)
+      if (!response.ok) throw new Error(`HTTP ${response.status}`)
+      
+      const geojson = await response.json()
+      console.log(`Loaded ${geojson.features?.length || 0} features for ${layer.id}`)
+      
+      setLoadedLayers(prev => ({
+        ...prev,
+        [layer.id]: geojson
+      }))
+      
+    } catch (error) {
+      console.error(`Failed to load layer ${layer.id}:`, error)
+    } finally {
+      setLoading(prev => ({ ...prev, [layer.id]: false }))
+    }
+  }
+
+  // Load all layers
   useEffect(() => {
-    if (!mapRef.current || !isInitialized) return
+    layers.forEach(layer => {
+      loadLayerData(layer)
+    })
+  }, [layers])
 
-    const map = mapRef.current
+  const handleClick = (event) => {
+    if (!mapRef.current) return
 
-    // Remove old layer groups
-    Object.values(layerGroupsRef.current).forEach((group) => map.removeLayer(group))
-    layerGroupsRef.current = {}
+    const features = mapRef.current.queryRenderedFeatures(event.point, {
+      layers: layers.map(layer => `${layer.id}-layer`)
+    })
+    
+    console.log("Clicked features:", features.length)
 
-    // Add visible layers
-    layers.forEach((layer) => {
-      const layerGroup = L.layerGroup().addTo(map)
-      layerGroupsRef.current[layer.id] = layerGroup
-
-      // Simulate geospatial data (in production, these would be GeoJSON from an API)
-      if (layer.id === "rivers") {
-        addRiversData(layerGroup, layer.color, onFeatureClick)
-      } else if (layer.id === "settlements") {
-        addSettlementsData(layerGroup, layer.color, onFeatureClick)
-      } else if (layer.id === "administrative") {
-        addAdministrativeData(layerGroup, layer.color, onFeatureClick)
-      } else if (layer.id === "roads") {
-        addRoadsData(layerGroup, layer.color, onFeatureClick)
-      } else if (layer.id === "forests") {
-        addForestsData(layerGroup, layer.color, onFeatureClick)
-      } else if (layer.id === "population") {
-        addPopulationData(layerGroup, layer.color, onFeatureClick)
+    if (features.length > 0) {
+      const feature = features[0]
+      const layer = layers.find(l => feature.source === l.id)
+      
+      if (layer) {
+        const featureData = {
+          type: layer.name || layer.layer_name,
+          country: layer.country,
+          properties: feature.properties,
+          geom_type: layer.geom_type,
+          layer_id: layer.id,
+        }
+        
+        onFeatureClick(featureData)
+        setPopupInfo({
+          lngLat: event.lngLat,
+          properties: feature.properties,
+          layerName: layer.name || layer.layer_name
+        })
       }
-    })
-  }, [layers, isInitialized, onFeatureClick])
+    }
+  }
 
-  return <div id="map" className="w-full h-full" />
-}
+  return (
+    <div className="w-full h-full relative">
+      <Map
+        ref={mapRef}
+        initialViewState={{
+          longitude: -4.4596,
+          latitude: 9.0765,
+          zoom: 5
+        }}
+        style={{ width: '100%', height: '100%' }}
+        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        onClick={handleClick}
+        interactiveLayerIds={layers.map(layer => `${layer.id}-layer`)}
+      >
+        {layers.map((layer) => {
+          const styleConfig = getLayerStyle(layer)
+          const layerData = loadedLayers[layer.id]
 
-// Helper functions to add sample data
-function addRiversData(group, color, onFeatureClick) {
-  const riverLines = [
-    [
-      [9.5, -4],
-      [9.0, -5],
-      [8.5, -6],
-    ],
-    [
-      [10.0, -3],
-      [9.5, -4],
-      [9.0, -5],
-    ],
-  ]
+          if (!layerData) {
+            console.log(`Layer ${layer.id} data not loaded yet`)
+            return null
+          }
 
-  riverLines.forEach((coords, idx) => {
-    const polyline = L.polyline(coords, {
-      color,
-      weight: 3,
-      opacity: 0.7,
-    }).addTo(group)
+          return (
+            <Source
+              key={layer.id}
+              id={layer.id}
+              type="geojson"
+              data={layerData}
+            >
+              <Layer
+                id={`${layer.id}-layer`}
+                type={styleConfig.type}
+                source={layer.id}
+                paint={styleConfig.paint}
+              />
+            </Source>
+          )
+        })}
 
-    polyline.on("click", () => {
-      onFeatureClick({
-        type: t('Features.River'),
-        name: `${t('Features.River')} ${idx + 1}`,
-        length: `${(Math.random() * 500 + 100).toFixed(0)} km`,
-        category: t('Features.Natural'),
-      })
-    })
-  })
-}
+        {popupInfo && (
+          <Popup
+            longitude={popupInfo.lngLat.lng}
+            latitude={popupInfo.lngLat.lat}
+            onClose={() => setPopupInfo(null)}
+            closeButton={true}
+          >
+            <div className="max-w-xs">
+              <div className="font-bold text-sm mb-2 text-foreground">
+                {popupInfo.layerName}
+              </div>
+              {popupInfo.properties && Object.entries(popupInfo.properties)
+                .slice(0, 8)
+                .map(([key, value]) => (
+                  <div key={key} className="text-xs">
+                    <strong>{key}:</strong> {String(value)}
+                  </div>
+                ))
+              }
+            </div>
+          </Popup>
+        )}
+      </Map>
 
-function addSettlementsData(group, color, onFeatureClick) {
-  const settlements = [
-    { name: "Lagos", coords: [6.5244, 3.3792], population: "15 million" },
-    { name: "Accra", coords: [5.603, -0.1863], population: "4 million" },
-    { name: "Bamako", coords: [12.6395, -8.0029], population: "2.5 million" },
-    { name: "Niamey", coords: [13.5116, 2.1257], population: "1.3 million" },
-  ]
-
-  settlements.forEach((settlement) => {
-    const marker = L.circleMarker([settlement.coords[0], settlement.coords[1]], {
-      radius: 8,
-      fillColor: color,
-      color: color,
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.7,
-    }).addTo(group)
-
-    marker.on("click", () => {
-      onFeatureClick({
-        type: "Settlement",
-        name: settlement.name,
-        population: settlement.population,
-        category: "Infrastructure",
-      })
-    })
-
-    marker.bindPopup(`<strong>${settlement.name}</strong><br/>Population: ${settlement.population}`)
-  })
-}
-
-function addAdministrativeData(group, color, onFeatureClick) {
-  // Simplified country boundaries as rectangles
-  const countries = [
-    {
-      name: "Nigeria",
-      bounds: [
-        [4, 2],
-        [14, 15],
-      ],
-    },
-    {
-      name: "Ghana",
-      bounds: [
-        [1.5, -4],
-        [11, 1],
-      ],
-    },
-    {
-      name: "Mali",
-      bounds: [
-        [10, -12],
-        [25, 4],
-      ],
-    },
-  ]
-
-  countries.forEach((country) => {
-    const rect = L.rectangle(country.bounds, {
-      color,
-      fill: false,
-      weight: 2,
-      opacity: 0.5,
-      dashArray: "5, 5",
-    }).addTo(group)
-
-    rect.on("click", () => {
-      onFeatureClick({
-        type: "Administrative Region",
-        name: country.name,
-        level: "Country",
-        category: "Administrative",
-      })
-    })
-  })
-}
-
-function addRoadsData(group, color, onFeatureClick) {
-  const roadLines = [
-    [
-      [6.5, 3.5],
-      [7.0, 4.0],
-      [7.5, 4.5],
-    ],
-    [
-      [5.5, -0.5],
-      [6.0, 0],
-      [6.5, 0.5],
-    ],
-  ]
-
-  roadLines.forEach((coords, idx) => {
-    const polyline = L.polyline(coords, {
-      color,
-      weight: 2,
-      opacity: 0.7,
-    }).addTo(group)
-
-    polyline.on("click", () => {
-      onFeatureClick({
-        type: "Road Network",
-        name: `Road ${idx + 1}`,
-        length: `${(Math.random() * 300 + 50).toFixed(0)} km`,
-        category: "Infrastructure",
-      })
-    })
-  })
-}
-
-function addForestsData(group, color, onFeatureClick) {
-  const forests = [
-    [
-      [8, -2],
-      [9, -1],
-      [9, -3],
-      [8, -4],
-    ],
-    [
-      [11, -6],
-      [12, -5],
-      [12, -7],
-      [11, -8],
-    ],
-  ]
-
-  forests.forEach((coords, idx) => {
-    const polygon = L.polygon(coords, {
-      color,
-      fill: true,
-      fillOpacity: 0.3,
-      weight: 1,
-      opacity: 0.7,
-    }).addTo(group)
-
-    polygon.on("click", () => {
-      onFeatureClick({
-        type: "Forest Coverage",
-        name: `Forest ${idx + 1}`,
-        area: `${(Math.random() * 5000 + 1000).toFixed(0)} sq km`,
-        category: "Natural",
-      })
-    })
-  })
-}
-
-function addPopulationData(group, color, onFeatureClick) {
-  const popCenters = [
-    { name: "High Density Zone", coords: [6.5, 3.5], density: "Very High" },
-    { name: "Medium Density Zone", coords: [8.0, 2.0], density: "Medium" },
-    { name: "Low Density Zone", coords: [10.0, -2.0], density: "Low" },
-  ]
-
-  popCenters.forEach((center) => {
-    const marker = L.circleMarker([center.coords[0], center.coords[1]], {
-      radius: 10,
-      fillColor: color,
-      color: color,
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.5,
-    }).addTo(group)
-
-    marker.on("click", () => {
-      onFeatureClick({
-        type: "Population Density",
-        name: center.name,
-        density: center.density,
-        category: "Demographic",
-      })
-    })
-  })
+      {/* Debug panel */}
+      <div className="absolute top-4 left-4 bg-black/90 text-white p-4 rounded text-sm max-w-md z-10">
+        <div className="font-bold mb-2">🧭 GeoJSON Map</div>
+        <div>Layers: {Object.keys(loadedLayers).length}/{layers.length} loaded</div>
+        
+        {layers.map(layer => (
+          <div key={layer.id} className="flex items-center mt-1 text-xs">
+            <div 
+              className="w-3 h-3 mr-2 rounded-full"
+              style={{ backgroundColor: layer.color || '#FF6B6B' }}
+            ></div>
+            <span>
+              {layer.name} - {loadedLayers[layer.id]?.features?.length || 0} features
+              {loading[layer.id] && ' (loading...)'}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }

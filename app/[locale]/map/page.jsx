@@ -2,21 +2,15 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ChevronUp } from "lucide-react"
+import { ChevronUp } from 'lucide-react'
+import MapComponent from "@/components/map-component"
 import InfoPanel from "@/components/info-panel"
 import DownloadModal from "@/components/download-modal"
 import CountryLayerSidebar from "@/components/country-layer-sidebar"
 import LayerMetadataPanel from "@/components/layer-metadata-panel"
-import { getAllLayers } from "@/utils/countries-layers"
-import dynamic from "next/dynamic";
-
-
-const MapComponent = dynamic(() => import("@/components/map-component"), {
-  ssr: false,
-});
 
 export default function MapPage() {
-  const [layers, setLayers] = useState(getAllLayers())
+  const [visibleLayers, setVisibleLayers] = useState([])
   const [selectedCountry, setSelectedCountry] = useState("ghana")
   const [selectedFeature, setSelectedFeature] = useState(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -24,23 +18,40 @@ export default function MapPage() {
   const [selectedLayerMetadata, setSelectedLayerMetadata] = useState(null)
   const [metadataLayer, setMetadataLayer] = useState(null)
   const [metadataCountry, setMetadataCountry] = useState(null)
+  const [metadataCountryId, setMetadataCountryId] = useState(null)
 
-  const toggleLayer = (layerId) => {
-    setLayers(layers.map((l) => (l.id === layerId ? { ...l, visible: !l.visible } : l)))
+  const toggleLayer = (layerId, countryId, layerData) => {
+    setVisibleLayers((prev) => {
+      const exists = prev.some((l) => l.id === layerId)
+      if (exists) {
+        return prev.filter((l) => l.id !== layerId)
+      } else {
+        return [
+          ...prev,
+          {
+            ...layerData,
+            id: layerId,
+            country: countryId,
+          },
+        ]
+      }
+    })
   }
 
-  const getVisibleLayers = () => layers.filter((l) => l.visible)
-
-  const handleShowMetadata = (layer, countryName) => {
+  const handleShowMetadata = (layer, countryName, countryId) => {
     setMetadataLayer(layer)
     setMetadataCountry(countryName)
+    setMetadataCountryId(countryId)
   }
 
   return (
     <div className="h-screen w-full flex flex-col bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/80 backdrop-blur-sm px-4 sm:px-6 py-4 flex items-center justify-between z-40">
-        
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">GeoPortal</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Explore geospatial data across West Africa</p>
+        </div>
         <Button
           variant="outline"
           size="sm"
@@ -58,21 +69,21 @@ export default function MapPage() {
           onLayerToggle={toggleLayer}
           onCountrySelect={setSelectedCountry}
           selectedCountry={selectedCountry}
-          visibleLayers={getVisibleLayers()}
+          visibleLayers={visibleLayers}
           onShowDownloadModal={() => setShowDownloadModal(true)}
           onShowMetadata={handleShowMetadata}
         />
 
         {/* Map and Info Panel */}
         <div className="flex-1 flex flex-col relative overflow-hidden z-0 max-w-6xl">
-          <MapComponent layers={getVisibleLayers()} onFeatureClick={setSelectedFeature} />
+          <MapComponent layers={visibleLayers} onFeatureClick={setSelectedFeature} />
           {selectedFeature && <InfoPanel feature={selectedFeature} onClose={() => setSelectedFeature(null)} />}
         </div>
       </div>
 
       {/* Download Modal */}
       {showDownloadModal && (
-        <DownloadModal visibleLayers={getVisibleLayers()} onClose={() => setShowDownloadModal(false)} />
+        <DownloadModal visibleLayers={visibleLayers} onClose={() => setShowDownloadModal(false)} />
       )}
 
       {/* Layer Metadata Panel */}
@@ -80,9 +91,11 @@ export default function MapPage() {
         <LayerMetadataPanel
           layer={metadataLayer}
           country={metadataCountry}
+          countryId={metadataCountryId}
           onClose={() => {
             setMetadataLayer(null)
             setMetadataCountry(null)
+            setMetadataCountryId(null)
           }}
         />
       )}

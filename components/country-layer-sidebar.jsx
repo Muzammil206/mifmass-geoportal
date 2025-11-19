@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ChevronDown, ChevronUp, X, Download, Search, Info } from "lucide-react"
+import { ChevronDown, ChevronUp, X, Download, Search, Info, Loader } from 'lucide-react'
 import { countriesData } from "@/utils/countries-layers"
 
 export default function CountryLayerSidebar({
@@ -15,17 +15,52 @@ export default function CountryLayerSidebar({
   onShowDownloadModal,
   onShowMetadata,
 }) {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [expandedCountries, setExpandedCountries] = useState({
     ghana: true,
-    nigeria: false,
+    nigeria_ona_river_basin: false,
     benin: false,
     burkina: false,
     cote: false,
     mali: false,
   })
-  const [expandedCategories, setExpandedCategories] = useState({})
-  const [searchQuery, setSearchQuery] = useState("")
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [countryLayers, setCountryLayers] = useState({})
+  const [loading, setLoading] = useState({})
+  const [error, setError] = useState({})
+
+  useEffect(() => {
+    const fetchCountryLayers = async (countryId) => {
+      if (countryLayers[countryId]) return // Already loaded
+
+      setLoading((prev) => ({ ...prev, [countryId]: true }))
+      try {
+        const response = await fetch(`/api/layers/${countryId}`)
+        if (!response.ok) throw new Error("Failed to fetch layers")
+        const data = await response.json()
+        const formattedLayers = data.map((layer, index) => ({
+          id: layer.layer_name.toLowerCase().replace(/\s+/g, "_"),
+          name: layer.layer_name,
+          geom_type: layer.geom_type,
+          country: countryId,
+          color: `hsl(${(index * 45) % 360}, 70%, 50%)`,
+        }))
+        setCountryLayers((prev) => ({ ...prev, [countryId]: formattedLayers }))
+      } catch (err) {
+        console.error(`[v0] Error fetching layers for ${countryId}:`, err)
+        setError((prev) => ({ ...prev, [countryId]: "Failed to load layers" }))
+      } finally {
+        setLoading((prev) => ({ ...prev, [countryId]: false }))
+      }
+    }
+
+    // Fetch layers for expanded countries
+    Object.entries(expandedCountries).forEach(([countryId, isExpanded]) => {
+      if (isExpanded && !countryLayers[countryId]) {
+        fetchCountryLayers(countryId)
+      }
+    })
+  }, [expandedCountries, countryLayers])
 
   const toggleCountry = (countryId) => {
     setExpandedCountries((prev) => ({
@@ -34,30 +69,22 @@ export default function CountryLayerSidebar({
     }))
   }
 
-  const toggleCategory = (categoryKey) => {
-    setExpandedCategories((prev) => ({
-      ...prev,
-      [categoryKey]: !prev[categoryKey],
-    }))
-  }
-
   const filteredCountries = useMemo(() => {
     if (!searchQuery) return countriesData
 
-    return countriesData
-      .map((country) => ({
-        ...country,
-        layers: country.layers.filter(
-          (layer) =>
-            layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            layer.category.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
-      }))
-      .filter((country) => country.layers.length > 0 || country.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  }, [searchQuery])
+    return countriesData.filter((country) => {
+      const layers = countryLayers[country.id] || []
+      const matchingLayers = layers.filter(
+        (layer) =>
+          layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          layer.geom_type.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      return matchingLayers.length > 0 || country.name.toLowerCase().includes(searchQuery.toLowerCase())
+    })
+  }, [searchQuery, countryLayers])
 
   const visibleCount = visibleLayers.length
-  const totalLayers = countriesData.reduce((sum, c) => sum + c.layers.length, 0)
+  const totalLayers = Object.values(countryLayers).reduce((sum, layers) => sum + (layers?.length || 0), 0)
 
   return (
     <aside
@@ -67,14 +94,6 @@ export default function CountryLayerSidebar({
     >
       {/* Sidebar Header */}
       <div className="p-5 border-b border-border space-y-4 bg-secondary/20">
-      
-      <div>
-          <div className="flex items-center">
-          <img src="/logo2.png" alt="GeoPortal" className="w-[250px] h-[60px] pb-4" />
-          
-          </div>
-        </div>
-
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-semibold text-foreground text-base">Data Layers</h2>
@@ -102,20 +121,16 @@ export default function CountryLayerSidebar({
       {/* Countries List */}
       <div className="overflow-y-auto flex-1 p-4 space-y-3">
         {filteredCountries.map((country) => {
-          const countryLayers = country.layers.filter(
+          const layers = countryLayers[country.id] || []
+          const isLoading = loading[country.id]
+          const hasError = error[country.id]
+
+          const filteredLayers = layers.filter(
             (layer) =>
               !searchQuery ||
               layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              layer.category.toLowerCase().includes(searchQuery.toLowerCase()),
+              layer.geom_type.toLowerCase().includes(searchQuery.toLowerCase()),
           )
-
-          const layersByCategory = countryLayers.reduce((acc, layer) => {
-            if (!acc[layer.category]) {
-              acc[layer.category] = []
-            }
-            acc[layer.category].push(layer)
-            return acc
-          }, {})
 
           return (
             <div
@@ -134,77 +149,65 @@ export default function CountryLayerSidebar({
               >
                 <div className="text-left">
                   <h3 className="font-semibold text-sm text-foreground">{country.name}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">{countryLayers.length} layers available</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {isLoading ? "Loading..." : filteredLayers.length + " layers available"}
+                  </p>
                 </div>
                 {expandedCountries[country.id] ? (
-                  <ChevronUp className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                  <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                 )}
               </button>
 
-              {/* Layers List by Category */}
+              {/* Layers List */}
               {expandedCountries[country.id] && (
                 <div className="border-t border-border bg-background/50">
-                  {Object.entries(layersByCategory).map(([category, layers]) => {
-                    const categoryKey = `${country.id}-${category}`
-                    const isExpanded = expandedCategories[categoryKey] !== false
+                  {isLoading && (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader className="w-4 h-4 animate-spin text-muted-foreground" />
+                    </div>
+                  )}
+                  {hasError && (
+                    <div className="p-4 text-xs text-destructive text-center">{hasError}</div>
+                  )}
+                  {!isLoading && !hasError && filteredLayers.length === 0 && (
+                    <div className="p-4 text-xs text-muted-foreground text-center">No layers available</div>
+                  )}
+                  {!isLoading &&
+                    !hasError &&
+                    filteredLayers.map((layer) => {
+                      const isVisible = visibleLayers.some((l) => l.id === layer.id)
 
-                    return (
-                      <div key={categoryKey}>
-                        {/* Category Header */}
-                        <button
-                          onClick={() => toggleCategory(categoryKey)}
-                          className="w-full flex items-center justify-between px-4 py-2 hover:bg-secondary/30 transition-colors border-b border-border last:border-b-0"
+                      return (
+                        <div
+                          key={layer.id}
+                          className="flex items-center gap-2 p-3 border-b border-border last:border-b-0 hover:bg-secondary/40 transition-colors group"
                         >
-                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                            {category}
-                          </span>
-                          <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">
-                            {layers.length}
-                          </span>
-                        </button>
-
-                        {/* Category Layers */}
-                        {isExpanded && (
-                          <div className="space-y-1 px-2 py-2">
-                            {layers.map((layer) => {
-                              const isVisible = visibleLayers.some((l) => l.id === layer.id)
-
-                              return (
-                                <div
-                                  key={layer.id}
-                                  className="flex items-center gap-2 p-2.5 rounded hover:bg-secondary/40 transition-colors group"
-                                >
-                                  <Checkbox
-                                    checked={isVisible}
-                                    onCheckedChange={() => onLayerToggle(layer.id)}
-                                    className="border-border"
-                                  />
-                                  <div
-                                    className="w-3 h-3 rounded-full flex-shrink-0 ring-1 ring-offset-1 ring-border"
-                                    style={{ backgroundColor: layer.color }}
-                                  />
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-xs font-medium text-foreground truncate">{layer.name}</p>
-                                    <p className="text-xs text-muted-foreground">{layer.category}</p>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onShowMetadata(layer, country.name)}
-                                    className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
-                                  >
-                                    <Info className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
-                                  </Button>
-                                </div>
-                              )
-                            })}
+                          <Checkbox
+                            checked={isVisible}
+                            onCheckedChange={() => onLayerToggle(layer.id, country.id, layer)}
+                            className="border-border"
+                          />
+                          <div
+                            className="w-3 h-3 rounded-full shrink-0 ring-1 ring-offset-1 ring-border"
+                            style={{ backgroundColor: layer.color }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-foreground truncate">{layer.name}</p>
+                            <p className="text-xs text-muted-foreground">{layer.geom_type}</p>
                           </div>
-                        )}
-                      </div>
-                    )
-                  })}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => onShowMetadata(layer, country.name, country.id)}
+                            className="p-1 h-auto opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          >
+                            <Info className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                          </Button>
+                        </div>
+                      )
+                    })}
                 </div>
               )}
             </div>

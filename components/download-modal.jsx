@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Download, Loader } from "lucide-react"
+import { X, Download, Loader } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -26,19 +26,20 @@ export default function DownloadModal({ visibleLayers, onClose }) {
 
     setIsDownloading(true)
     try {
-      const response = await fetch("/api/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          format: selectedFormat,
-          layers: selectedLayers,
-        }),
-      })
+      const downloadPromises = visibleLayers
+        .filter((l) => selectedLayers.includes(l.id))
+        .map((layer) => {
+          const url = `/api/download/${layer.country}/${layer.name}?format=${selectedFormat}`
+          return fetch(url).then((res) => {
+            if (!res.ok) throw new Error(`Failed to download ${layer.name}`)
+            return res.blob()
+          })
+        })
 
-      if (!response.ok) throw new Error("Download failed")
-
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
+      const blobs = await Promise.all(downloadPromises)
+      
+      const combinedBlob = new Blob(blobs, { type: "application/octet-stream" })
+      const url = window.URL.createObjectURL(combinedBlob)
       const a = document.createElement("a")
       a.href = url
       a.download = `geospatial-data-${Date.now()}${FORMATS.find((f) => f.id === selectedFormat)?.ext || ""}`
@@ -49,7 +50,7 @@ export default function DownloadModal({ visibleLayers, onClose }) {
 
       onClose()
     } catch (error) {
-      console.error("Download error:", error)
+      console.error("[v0] Download error:", error)
       alert("Failed to download data")
     } finally {
       setIsDownloading(false)

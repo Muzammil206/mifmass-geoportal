@@ -23,7 +23,7 @@ export default function Navbar() {
           </Link>
           <Link href="/map" className="text-sm text-muted-foreground hover:text-foreground transition">
             {t('resources')}
-          </Link>
+          </Link> 
           <LanguageSwitcher />
           
         </div>
