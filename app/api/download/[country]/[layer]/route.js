@@ -48,6 +48,58 @@ export async function GET(req, context) {
     });
   }
 
+
+  // -------------------------
+  // KML EXPORT
+  // -------------------------
+  if (format === "kml") {
+    const sql = `
+      SELECT ST_AsKML(geom) AS kml_geometry,
+             to_jsonb(t) - 'geom' AS properties
+      FROM ${schema}.${table} AS t
+    `;
+
+    const result = await db.query(sql);
+
+    // Build KML manually
+    let kml = `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>${table}</name>
+    <description>Exported from ${schema}.${table}</description>`;
+
+    result.rows.forEach((row, index) => {
+      const properties = row.properties;
+      
+      kml += `
+    <Placemark>
+      <name>Feature ${index + 1}</name>
+      <description>`;
+
+      // Add properties as description
+      Object.entries(properties).forEach(([key, value]) => {
+        if (value !== null && key !== 'geom') {
+          kml += `${key}: ${value}\n`;
+        }
+      });
+
+      kml += `</description>
+      ${row.kml_geometry}
+    </Placemark>`;
+    });
+
+    kml += `
+  </Document>
+</kml>`;
+
+    return new Response(kml, {
+      headers: {
+        "Content-Type": "application/vnd.google-earth.kml+xml",
+        "Content-Disposition": `attachment; filename="${table}.kml"`
+      }
+    });
+  }
+
   // -------------------------
   // CSV EXPORT (SAFE)
   // -------------------------

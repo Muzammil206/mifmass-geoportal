@@ -12,7 +12,7 @@
   },
   {
     id: "nigeria_ona_river_basin",
-    name: "nigeria_ona_river_basin",
+    name: "Nigeria",
     region: "West Africa",
     center: [9.0765, 8.6753],
     bounds: [

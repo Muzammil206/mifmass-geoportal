@@ -44,22 +44,22 @@ export default function FeaturesSection() {
 
   return (
     <motion.section
-      className="py-20 border-t border-border bg-card/30"
+      className="py-7 border-t border-border bg-card/30"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-0 py-0">
         {/* Main Features */}
-        <h2 className="text-3xl font-bold text-foreground text-center mb-4">{t('Features.title')}</h2>
+        <h2 className="text-3xl font-bold text-foreground text-center ">{t('Features.title')}</h2>
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">{t('Features.description')}</p>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
           {mainFeatures.map((feature, idx) => (
             <motion.div
               key={idx}
-              className="p-6 rounded-lg border border-border bg-background hover:border-accent transition-colors"
+              className="p-5 rounded-lg border border-border bg-background hover:border-accent transition-colors"
               whileHover={{ y: -4 }}
             >
               <feature.icon className="w-10 h-10 text-accent mb-4" />

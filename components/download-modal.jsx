@@ -1,15 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { X, Download, Loader } from 'lucide-react'
+import { X, Download, Loader } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import shpwrite from "@mapbox/shp-write"
 
 const FORMATS = [
   { id: "geojson", label: "GeoJSON", description: "Standard geospatial format", ext: ".geojson" },
   { id: "shapefile", label: "Shapefile", description: "ArcGIS compatible format", ext: ".zip" },
   { id: "csv", label: "CSV", description: "Comma-separated values", ext: ".csv" },
+  { id: "kml", label: "KML", description: "Google Earth format", ext: ".kml" },
 ]
 
 export default function DownloadModal({ visibleLayers, onClose }) {
@@ -26,6 +28,56 @@ export default function DownloadModal({ visibleLayers, onClose }) {
 
     setIsDownloading(true)
     try {
+      if (selectedFormat === "shapefile") {
+        const layersToDownload = visibleLayers.filter((l) => selectedLayers.includes(l.id))
+
+        for (const layer of layersToDownload) {
+          const url = `/api/geojson/${layer.country}/${layer.name}`
+          const res = await fetch(url)
+          if (!res.ok) throw new Error(`Failed to fetch data for ${layer.name}`)
+
+          const geojson = await res.json()
+
+          if (!geojson || !geojson.features || geojson.features.length === 0) {
+            console.warn(` No features found for layer: ${layer.name}`, geojson)
+            continue
+          }
+
+          console.log(` Generating Shapefile for ${layer.name} with ${geojson.features.length} features`)
+
+          const options = {
+            folder: layer.name,
+          }
+
+          const content = await shpwrite.zip(geojson, options)
+
+          let blobData
+          if (typeof content === "string") {
+            // Convert base64 string to Uint8Array
+            const byteCharacters = atob(content)
+            const byteNumbers = new Array(byteCharacters.length)
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i)
+            }
+            blobData = new Uint8Array(byteNumbers)
+          } else {
+            blobData = content
+          }
+
+          const blobUrl = URL.createObjectURL(new Blob([blobData], { type: "application/zip" }))
+          const a = document.createElement("a")
+          a.href = blobUrl
+          a.download = `${layer.name}-${Date.now()}.zip`
+          document.body.appendChild(a)
+          a.click()
+          URL.revokeObjectURL(blobUrl)
+          document.body.removeChild(a)
+        }
+
+        onClose()
+        return
+      }
+
       const downloadPromises = visibleLayers
         .filter((l) => selectedLayers.includes(l.id))
         .map((layer) => {
@@ -37,7 +89,7 @@ export default function DownloadModal({ visibleLayers, onClose }) {
         })
 
       const blobs = await Promise.all(downloadPromises)
-      
+
       const combinedBlob = new Blob(blobs, { type: "application/octet-stream" })
       const url = window.URL.createObjectURL(combinedBlob)
       const a = document.createElement("a")
@@ -50,7 +102,7 @@ export default function DownloadModal({ visibleLayers, onClose }) {
 
       onClose()
     } catch (error) {
-      console.error("[v0] Download error:", error)
+      console.error(" Download error:", error)
       alert("Failed to download data")
     } finally {
       setIsDownloading(false)
