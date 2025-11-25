@@ -56,8 +56,7 @@ export default function FooterSection() {
       ],
     },
   ]
-
-  const partners = ["UNICEF", "World Bank", "Gates Foundation", "Research Council"]
+  const partners = ["African Union Commission", "European Union"]
 
   return (
     <footer className="border-t border-border bg-green-600">
