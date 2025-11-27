@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "MIFMASS Flood Database",
-  description: "Regional flood database for West Africa - Monitor, record, and manage flood events",
+  title: "MIFMASS Geoportal",
+  description: "Regional Geoportal for  flood Analysis  for West Africa -",
   keywords: ["Flood Monitoring", "Event Management", "Disaster Response", "Geospatial Analysis", "West Africa Flood"],
   authors: [{ name: "Ismail Muzammil" }],
   creator: "Ismail Muzammil",
