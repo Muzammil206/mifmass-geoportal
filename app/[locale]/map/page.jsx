@@ -10,9 +10,12 @@ import DownloadModal from "@/components/download-modal"
 import CountryLayerSidebar from "@/components/country-layer-sidebar"
 import LayerMetadataPanel from "@/components/layer-metadata-panel"
 import Image from "next/image"
+import { Link } from "@/i18n/routing"
 import { countriesData } from "@/utils/countries-layers"
+import { useTranslations } from "next-intl"
 
 function MapContent() {
+  const t = useTranslations("Navigation")
   const searchParams = useSearchParams()
   const [visibleLayers, setVisibleLayers] = useState([])
   const [selectedCountry, setSelectedCountry] = useState("ghana_black_volta")
@@ -139,6 +142,24 @@ function MapContent() {
         >
           {sidebarOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </Button>
+              <div className="hidden md:flex gap-6 items-center">
+                <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition">
+                  Home
+                </Link>
+                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition">
+                  {t("about")}
+                </Link>
+                <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition">
+                  {t("documentation")}
+                </Link>
+                <Link href="/docs/#working-with-layers" className="text-sm text-muted-foreground hover:text-foreground transition">
+                  {t("resources")}
+                </Link>
+                <Link href="/map">
+                 
+                </Link>
+      
+              </div>
       </div>
 
       {/* Main Content */}

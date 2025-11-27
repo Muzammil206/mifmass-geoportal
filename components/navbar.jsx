@@ -17,6 +17,9 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex gap-6 items-center">
+          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition">
+            Home
+          </Link>
           <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition">
             {t("about")}
           </Link>
@@ -32,6 +35,7 @@ export default function Navbar() {
               Go to Map View
             </Button>
           </Link>
+
           <LanguageSwitcher />
         </div>
       </div>
