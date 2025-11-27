@@ -17,13 +17,13 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex gap-6 items-center">
-          <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition">
+          <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition">
             {t("about")}
           </Link>
-          <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition">
+          <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition">
             {t("documentation")}
           </Link>
-          <Link href="/map" className="text-sm text-muted-foreground hover:text-foreground transition">
+          <Link href="/docs/#working-with-layers" className="text-sm text-muted-foreground hover:text-foreground transition">
             {t("resources")}
           </Link>
           <Link href="/map">

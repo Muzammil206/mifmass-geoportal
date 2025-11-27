@@ -52,7 +52,14 @@ export default function FeaturesSection() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 my-0 py-0">
         {/* Main Features */}
-        <h2 className="text-3xl font-bold text-foreground text-center ">{t('Features.title')}</h2>
+        <h2 className="text-3xl mb-4 font-bold text-foreground text-center ">{t('Features.title')}</h2>
+               <motion.div
+          initial={{ scaleX: 0 }}
+          whileInView={{ scaleX: 1 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent mb-16 max-w-md mx-auto rounded-full shadow-lg shadow-orange-500/30"
+        />
         <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">{t('Features.description')}</p>
 
         <div className="grid md:grid-cols-3 gap-8 mb-16">
