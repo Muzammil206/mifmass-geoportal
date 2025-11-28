@@ -66,8 +66,8 @@ export default function FeaturesSection() {
           {mainFeatures.map((feature, idx) => (
             <motion.div
               key={idx}
-              className="p-5 rounded-lg border border-border bg-background hover:border-accent transition-colors"
-              whileHover={{ y: -4 }}
+              className="p-5 rounded-lg border border-border bg-background  transition-colors"
+              
             >
               <feature.icon className="w-10 h-10 text-accent mb-4" />
               <h3 className="font-semibold text-foreground mb-2">{feature.title}</h3>
@@ -83,8 +83,8 @@ export default function FeaturesSection() {
             {secondaryFeatures.map((feature, idx) => (
               <motion.div
                 key={idx}
-                className="p-6 rounded-lg border border-border bg-background/50 hover:border-accent transition-colors"
-                whileHover={{ y: -4 }}
+                className="p-6 rounded-lg border border-border bg-background/50 transition-colors"
+                
               >
                 <feature.icon className="w-10 h-10 text-accent mb-4" />
                 <h4 className="font-semibold text-foreground mb-2">{feature.title}</h4>

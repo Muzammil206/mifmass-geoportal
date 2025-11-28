@@ -18,7 +18,7 @@ export default function PartnersSection() {
       logo: "/eu.jpg",
     },
     {
-      name: "MIMAF",
+      name: "MIFMASS",
       description: "Advancing geospatial development in West Africa",
       color: "from-green-600 to-teal-600",
       logo: "/logo2.png",
