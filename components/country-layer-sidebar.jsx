@@ -14,6 +14,7 @@ export default function CountryLayerSidebar({
   visibleLayers,
   onShowDownloadModal,
   onShowMetadata,
+  
   layerNotFound, // Add prop
 }) {
   const [searchQuery, setSearchQuery] = useState("")

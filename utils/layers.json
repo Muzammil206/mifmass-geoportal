@@ -1,80 +1,154 @@
 [
   {
-    "country": "nigeria",
-    "displayName": "Nigeria",
+    "country": "ghana",
+    "displayName": "Ghana",
     "themes": [
+      {
+        "name": "Basin Boundaries",
+        "layers": [
+          {
+            "id": "gh_black_volta_boundary_basin",
+            "title": "Black Volta Basin Boundary",
+            "url": "/collections/ghana.gh_black_volta_boundary_basin/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "The Black Volta is one of the major sub-basins of the Volta River System",
+              "source": "Water Resources Commission",
+              "lastUpdated": "2016"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Settlements",
+        "layers": [
+          {
+            "id": "gh_black_volta_villages",
+            "title": "Black Volta Villages and Settlements",
+            "url": "/collections/ghana.gh_black_volta_villages/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Communities within the Black Volta Basin",
+              "source": "CERSGIS",
+              "lastUpdated": "2016"
+            }
+          }
+        ]
+      },
       {
         "name": "Hydrology",
         "layers": [
           {
-            "id": "rivers",
-            "title": "Major Rivers",
-            "source": "pg_tileserv",
-            "url": "/collections/nigeria.rivers/{z}/{x}/{y}.pbf",
+            "id": "gh_black_volta_rivers",
+            "title": "Black Volta Rivers and Streams",
+            "url": "/collections/ghana.gh_black_volta_rivers/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Rivers and waterways across Nigeria",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-06-01"
-            }
-          },
-          {
-            "id": "flood_zones",
-            "title": "Flood Risk Zones",
-            "url": "/collections/nigeria.flood_zones/{z}/{x}/{y}.pbf",
-            "metadata": {
-              "description": "Areas prone to seasonal flooding",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-05-15"
+              "description": "Major rivers, minor rivers, streams, channels, drains, creeks etc in Black Volta Basin",
+              "source": "CERSGIS",
+              "lastUpdated": "N/A"
             }
           }
         ]
       },
       {
-        "name": "Infrastructure",
+        "name": "Administrative",
         "layers": [
           {
-            "id": "roads",
-            "title": "Road Network",
-            "url": "/collections/nigeria.roads/{z}/{x}/{y}.pbf",
+            "id": "gh_black_volta_district",
+            "title": "Black Volta District Boundaries",
+            "url": "/collections/ghana.gh_black_volta_district/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Primary and secondary road networks",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-06-01"
+              "description": "Administrative district boundaries within Black Volta Basin region",
+              "source": "CERSGIS",
+              "lastUpdated": "N/A"
             }
           },
           {
-            "id": "power_lines",
-            "title": "Power Lines",
-            "url": "/collections/nigeria.power_lines/{z}/{x}/{y}.pbf",
+            "id": "gh_black_volta_regions",
+            "title": "Black Volta Regional Boundaries",
+            "url": "/collections/ghana.gh_black_volta_regions/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Electrical transmission and distribution lines",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-04-20"
+              "description": "Regional administrative boundaries within Black Volta Basin area",
+              "source": "CERSGIS",
+              "lastUpdated": "N/A"
             }
           }
         ]
       },
       {
-        "name": "Population",
+        "name": "Land Cover",
         "layers": [
           {
-            "id": "settlements",
-            "title": "Settlements",
-            "url": "/collections/nigeria.settlements/{z}/{x}/{y}.pbf",
+            "id": "gh_black_volta_landcover",
+            "title": "Black Volta Land Cover",
+            "url": "/collections/ghana.gh_black_volta_landcover/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Human settlements and population centers",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-06-01"
+              "description": "Land use land cover features of Black Volta Basin region at 500m resolution",
+              "source": "CERSGIS",
+              "lastUpdated": "N/A"
             }
           },
           {
-            "id": "schools",
-            "title": "Educational Facilities",
-            "url": "/collections/nigeria.schools/{z}/{x}/{y}.pbf",
+            "id": "gh_black_volta_forest_reserves",
+            "title": "Black Volta Forest Reserves",
+            "url": "/collections/ghana.gh_black_volta_forest_reserves/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Schools and educational institutions",
-              "source": "GRID3 Nigeria",
-              "lastUpdated": "2024-05-01"
+              "description": "Forest reserve areas within Black Volta Basin region",
+              "source": "CERSGIS",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Elevation",
+        "layers": [
+          {
+            "id": "gh_black_volta_contour",
+            "title": "Black Volta Contour Lines",
+            "url": "/collections/ghana.gh_black_volta_contour/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Contour lines for Black Volta Basin with elevation information",
+              "source": "CERSGIS",
+              "lastUpdated": "2015"
+            }
+          },
+          {
+            "id": "gh_black_volta_spot_heights",
+            "title": "Black Volta Spot Heights",
+            "url": "/collections/ghana.gh_black_volta_spot_heights/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Point elevation data for Black Volta Basin region",
+              "source": "CERSGIS",
+              "lastUpdated": "2015"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Geology",
+        "layers": [
+          {
+            "id": "gh_black_volta_geology",
+            "title": "Black Volta Geology",
+            "url": "/collections/ghana.gh_black_volta_geology/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Geological map showing rock types in Black Volta Basin region",
+              "source": "Ghana Geological Survey Authority",
+              "lastUpdated": "2009"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Soil",
+        "layers": [
+          {
+            "id": "gh_black_volta_soil_type",
+            "title": "Black Volta Soil Types",
+            "url": "/collections/ghana.gh_black_volta_soil_type/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Soil map showing soil types in Black Volta Basin region",
+              "source": "Soil Research Institute",
+              "lastUpdated": "1971"
             }
           }
         ]
@@ -82,20 +156,60 @@
     ]
   },
   {
-    "country": "ghana",
-    "displayName": "Ghana",
+    "country": "nigeria",
+    "displayName": "Nigeria",
     "themes": [
+      {
+        "name": "Basin Boundaries",
+        "layers": [
+          {
+            "id": "ng_ona_boundary",
+            "title": "Ona Basin Boundary",
+            "url": "/collections/nigeria.ng_ona_boundary/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "The Ona Basin Layer within Ibadan for riverine flood assessment",
+              "source": "CSSTE",
+              "lastUpdated": "2018"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Settlements",
+        "layers": [
+          {
+            "id": "ng_ona_town",
+            "title": "Towns and Localities",
+            "url": "/collections/nigeria.ng_ona_town/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Towns and localities within Ona Basin boundary in Ibadan",
+              "source": "Ibadan Urban Flood Management Project",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_administratives_cities",
+            "title": "Administrative Cities",
+            "url": "/collections/nigeria.ng_ona_administratives_cities/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Administrative cities within Ona Basin boundary",
+              "source": "Ibadan Urban Flood Management Project",
+              "lastUpdated": "2018"
+            }
+          }
+        ]
+      },
       {
         "name": "Hydrology",
         "layers": [
           {
-            "id": "rivers_gh",
-            "title": "Major Rivers",
-            "url": "/collections/ghana.rivers/{z}/{x}/{y}.pbf",
+            "id": "ng_ona_river",
+            "title": "River Network",
+            "url": "/collections/nigeria.ng_ona_river/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Rivers and waterways across Ghana",
-              "source": "GRID3 Ghana",
-              "lastUpdated": "2024-06-01"
+              "description": "Hydrologic network of flowing water for flood assessment",
+              "source": "CSSTE",
+              "lastUpdated": "2019"
             }
           }
         ]
@@ -104,13 +218,400 @@
         "name": "Infrastructure",
         "layers": [
           {
-            "id": "roads_gh",
+            "id": "ng_ona_roads",
             "title": "Road Network",
-            "url": "/collections/ghana.roads/{z}/{x}/{y}.pbf",
+            "url": "/collections/nigeria.ng_ona_roads/{z}/{x}/{y}.pbf",
             "metadata": {
-              "description": "Primary and secondary road networks",
-              "source": "GRID3 Ghana",
-              "lastUpdated": "2024-06-01"
+              "description": "Road network for flood impact assessment in Ona Basin",
+              "source": "Ibadan Urban Flood Management Project",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_railway_line",
+            "title": "Railway Network",
+            "url": "/collections/nigeria.ng_ona_railway_line/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Railway network crossing Ibadan city for flood impact",
+              "source": "Ibadan Urban Flood Management Project",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_buildings",
+            "title": "Building Footprints",
+            "url": "/collections/nigeria.ng_ona_buildings/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Building footprints for flood hazard assessment",
+              "source": "Ibadan Urban Flood Management Project",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_infratstructures",
+            "title": "Infrastructure Points",
+            "url": "/collections/nigeria.ng_ona_infratstructures/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Sensitive infrastructure for flood impact assessment",
+              "source": "CSSTE",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_landmark",
+            "title": "Landmarks",
+            "url": "/collections/nigeria.ng_ona_landmark/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Major landmarks that may be affected by flood",
+              "source": "CSSTE",
+              "lastUpdated": "2019"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Elevation",
+        "layers": [
+          {
+            "id": "ng_ona_10m_contour",
+            "title": "10m Topographic Contours",
+            "url": "/collections/nigeria.ng_ona_10m_contour/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "10m contour lines for terrain modeling",
+              "source": "OSGOF",
+              "lastUpdated": "2019"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Geology",
+        "layers": [
+          {
+            "id": "ng_ona_geology",
+            "title": "Geology Formations",
+            "url": "/collections/nigeria.ng_ona_geology/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Geology formations covering Ona Basin, Ibadan",
+              "source": "Nigerian Geological Services Agency",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_geology_official",
+            "title": "Geology (Official)",
+            "url": "/collections/nigeria.ng_ona_geology_official/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Official geological map of Ona Basin area",
+              "source": "Nigerian Geological Services Agency",
+              "lastUpdated": "2018"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Soil",
+        "layers": [
+          {
+            "id": "ng_ona_soil",
+            "title": "Soil Classifications",
+            "url": "/collections/nigeria.ng_ona_soil/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Soil classifications influencing flood impact",
+              "source": "Nigerian Geological Services Agency",
+              "lastUpdated": "2018"
+            }
+          },
+          {
+            "id": "ng_ona_soil_official",
+            "title": "Soil (Official)",
+            "url": "/collections/nigeria.ng_ona_soil_official/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Official soil classification map of Ona Basin area",
+              "source": "Nigerian Geological Services Agency",
+              "lastUpdated": "2018"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "benin",
+    "displayName": "Benin",
+    "themes": [
+      {
+        "name": "Basin Boundaries",
+        "layers": [
+          {
+            "id": "benin_oueme_basin_boundary",
+            "title": "Oueme Basin Boundary",
+            "url": "/collections/benin.benin_oueme_basin_boundary/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Oueme River Basin boundary for hydrological studies",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Settlements",
+        "layers": [
+          {
+            "id": "benin_oueme_villages",
+            "title": "Villages",
+            "url": "/collections/benin.benin_oueme_villages/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Villages locations within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_localities",
+            "title": "Localities",
+            "url": "/collections/benin.benin_oueme_localities/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Localities and populated places in Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Hydrology",
+        "layers": [
+          {
+            "id": "benin_oueme_streams",
+            "title": "Stream Network",
+            "url": "/collections/benin.benin_oueme_streams/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Stream layers within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_discharge_station",
+            "title": "Discharge Stations",
+            "url": "/collections/benin.benin_oueme_discharge_station/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Hydrometric stations for discharge measurement in Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_water_body",
+            "title": "Water Bodies",
+            "url": "/collections/benin.benin_oueme_water_body/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Water bodies within Oueme Basin area",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_wetland",
+            "title": "Wetlands",
+            "url": "/collections/benin.benin_oueme_wetland/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Wetland areas within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Infrastructure",
+        "layers": [
+          {
+            "id": "benin_oueme_roads",
+            "title": "Road Network",
+            "url": "/collections/benin.benin_oueme_roads/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Road layers within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Elevation",
+        "layers": [
+          {
+            "id": "benin_oueme_contour_map",
+            "title": "Contour Map",
+            "url": "/collections/benin.benin_oueme_contour_map/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Topographic contour map of Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Administrative",
+        "layers": [
+          {
+            "id": "benin_oueme_districts",
+            "title": "Districts",
+            "url": "/collections/benin.benin_oueme_districts/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Administrative districts within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_subdistricts",
+            "title": "Sub-districts",
+            "url": "/collections/benin.benin_oueme_subdistricts/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Administrative sub-districts within Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Geology",
+        "layers": [
+          {
+            "id": "benin_oueme_geology",
+            "title": "Geology",
+            "url": "/collections/benin.benin_oueme_geology/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Geological formations in Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "benin_oueme_morphology",
+            "title": "Morphology",
+            "url": "/collections/benin.benin_oueme_morphology/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Morphological features of Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Soil",
+        "layers": [
+          {
+            "id": "benin_oueme_soils",
+            "title": "Soils",
+            "url": "/collections/benin.benin_oueme_soils/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Soil types and formations in Oueme Basin",
+              "source": "INE/UAC Benin",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "country": "cote_divoire",
+    "displayName": "Côte d'Ivoire",
+    "themes": [
+      {
+        "name": "Settlements",
+        "layers": [
+          {
+            "id": "cote_dlvoire_building",
+            "title": "Buildings",
+            "url": "/collections/cote_divoire.cote_dlvoire_building/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Building footprints in Côte d'Ivoire study area",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Hydrology",
+        "layers": [
+          {
+            "id": "cote_dlvoire_stream",
+            "title": "Stream Network",
+            "url": "/collections/cote_divoire.cote_dlvoire_stream/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Stream network in Côte d'Ivoire study area",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "cote_dlvoire_hydrographic_network",
+            "title": "Hydrographic Network",
+            "url": "/collections/cote_divoire.cote_dlvoire_hydrographic_network/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Complete hydrographic network including rivers and streams",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "cote_dlvoire_stream_order",
+            "title": "Stream Order Classification",
+            "url": "/collections/cote_divoire.cote_dlvoire_stream_order/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Stream order classification for hydrological analysis",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          },
+          {
+            "id": "cote_dlvoire_water_body",
+            "title": "Water Bodies",
+            "url": "/collections/cote_divoire.cote_dlvoire_water_body/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Water bodies including lakes, ponds, and reservoirs",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Geology",
+        "layers": [
+          {
+            "id": "cote_dlvoire_geology",
+            "title": "Geology",
+            "url": "/collections/cote_divoire.cote_dlvoire_geology/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Geological formations in Côte d'Ivoire study area",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Soil",
+        "layers": [
+          {
+            "id": "cote_dlvoire_soil_formation",
+            "title": "Soil Formations",
+            "url": "/collections/cote_divoire.cote_dlvoire_soil_formation/{z}/{x}/{y}.pbf",
+            "metadata": {
+              "description": "Soil formations and types in Côte d'Ivoire study area",
+              "source": "Local Data Source",
+              "lastUpdated": "N/A"
             }
           }
         ]

@@ -27,6 +27,11 @@ function MapContent() {
   const [metadataCountry, setMetadataCountry] = useState(null)
   const [metadataCountryId, setMetadataCountryId] = useState(null)
   const [layerNotFound, setLayerNotFound] = useState(null)
+   const [currentLayerContext, setCurrentLayerContext] = useState(null)
+
+  
+  // NEW: Track the currently selected layer for auto-zoom
+  const [selectedLayerId, setSelectedLayerId] = useState(null)
 
   const initialViewState =
     searchParams.get("lat") && searchParams.get("lng")
@@ -41,15 +46,12 @@ function MapContent() {
     if (!param) return null
     const lowerParam = param.toLowerCase()
 
-    // 1. Try exact ID match
     const exactMatch = countriesData.find((c) => c.id.toLowerCase() === lowerParam)
     if (exactMatch) return exactMatch.id
 
-    // 2. Try partial ID match (e.g. "nigeria" matches "nigeria_ona_river_basin")
     const partialIdMatch = countriesData.find((c) => c.id.toLowerCase().includes(lowerParam))
     if (partialIdMatch) return partialIdMatch.id
 
-    // 3. Try name match
     const nameMatch = countriesData.find((c) => c.name.toLowerCase().includes(lowerParam))
     if (nameMatch) return nameMatch.id
 
@@ -89,6 +91,8 @@ function MapContent() {
                   }
                   return prev
                 })
+                // NEW: Set the selected layer for auto-zoom
+                setSelectedLayerId(formattedLayer.id)
                 setLayerNotFound(null)
               } else {
                 setLayerNotFound(activeLayerParam)
@@ -103,12 +107,19 @@ function MapContent() {
     }
   }, [searchParams])
 
+  // NEW: Updated toggleLayer function to handle auto-zoom
   const toggleLayer = (layerId, countryId, layerData) => {
     setVisibleLayers((prev) => {
       const exists = prev.some((l) => l.id === layerId)
       if (exists) {
+        // Removing layer - clear selection if it was the selected one
+        if (selectedLayerId === layerId) {
+          setSelectedLayerId(null)
+        }
         return prev.filter((l) => l.id !== layerId)
       } else {
+        // Adding layer - set it as selected for auto-zoom
+        setSelectedLayerId(layerId)
         return [
           ...prev,
           {
@@ -132,7 +143,7 @@ function MapContent() {
       {/* Header */}
       <div className="border-b border-border bg-card/80 backdrop-blur-sm px-4 sm:px-6 py-4 flex items-center justify-between z-40">
         <div>
-          <Image src="/logo2.png" alt="GeoPortal Logo" width={150} height={90} />
+          <Image src="/logo2.png" alt="GeoPortal Logo" width={150} height={90} loading="eager" className="h-auto w-auto" />
         </div>
         <Button
           variant="outline"
@@ -142,24 +153,21 @@ function MapContent() {
         >
           {sidebarOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
         </Button>
-              <div className="hidden md:flex gap-6 items-center">
-                <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition">
-                  Home
-                </Link>
-                <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition">
-                  {t("about")}
-                </Link>
-                <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition">
-                  {t("documentation")}
-                </Link>
-                <Link href="/docs/#working-with-layers" className="text-sm text-muted-foreground hover:text-foreground transition">
-                  {t("resources")}
-                </Link>
-                <Link href="/map">
-                 
-                </Link>
-      
-              </div>
+        <div className="hidden md:flex gap-6 items-center">
+          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition">
+            Home
+          </Link>
+          <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition">
+            {t("about")}
+          </Link>
+          <Link href="/docs" className="text-sm text-muted-foreground hover:text-foreground transition">
+            {t("documentation")}
+          </Link>
+          <Link href="/docs/#working-with-layers" className="text-sm text-muted-foreground hover:text-foreground transition">
+            {t("resources")}
+          </Link>
+          <Link href="/map"></Link>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -172,17 +180,25 @@ function MapContent() {
           visibleLayers={visibleLayers}
           onShowDownloadModal={() => setShowDownloadModal(true)}
           onShowMetadata={handleShowMetadata}
-          layerNotFound={layerNotFound} // Pass not found state
+          layerNotFound={layerNotFound}
+          selectedLayerId={selectedLayerId} // Pass selected layer to highlight it
         />
 
-        {/* Map and Info Panel */}
+        {/* Map and Info Panel - NEW: Pass selectedLayerId to MapComponent */}
         <div className="flex-1 flex flex-col relative overflow-hidden z-0 max-w-6xl">
           <MapComponent
             layers={visibleLayers}
             onFeatureClick={setSelectedFeature}
-            initialViewState={initialViewState} // Pass initial view state
+            initialViewState={initialViewState}
+            selectedLayerId={selectedLayerId} // Add this prop
           />
-          {selectedFeature && <InfoPanel feature={selectedFeature} onClose={() => setSelectedFeature(null)} />}
+          {selectedFeature && <InfoPanel
+              feature={selectedFeature}
+              onClose={() => setSelectedFeature(null)}
+              layerContext={currentLayerContext}
+              onShowMetadata={handleShowMetadata}
+              onShowDownloadModal={() => setShowDownloadModal(true)}
+            />}
         </div>
       </div>
 

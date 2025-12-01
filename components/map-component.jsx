@@ -13,6 +13,8 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
   const [searchQuery, setSearchQuery] = useState("")
   const [searchResults, setSearchResults] = useState([])
   const [isSearching, setIsSearching] = useState(false)
+  const [layerBounds, setLayerBounds] = useState({})
+  const [recentlyZoomedLayers, setRecentlyZoomedLayers] = useState(new Set()) // Track recently zoomed layers
 
   useEffect(() => {
     if (initialViewState && mapRef.current) {
@@ -24,6 +26,195 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
     }
   }, [initialViewState])
 
+  // Function to calculate bounds from GeoJSON
+  const calculateBounds = (geojson) => {
+    if (!geojson?.features?.length) return null
+
+    let minLng = 180
+    let maxLng = -180
+    let minLat = 90
+    let maxLat = -90
+
+    const processCoordinates = (coords) => {
+      if (Array.isArray(coords[0]) && Array.isArray(coords[0][0])) {
+        // Nested arrays (Polygon, MultiLineString, etc.)
+        coords.forEach(ring => {
+          if (Array.isArray(ring[0])) {
+            ring.forEach(coord => {
+              const [lng, lat] = coord
+              minLng = Math.min(minLng, lng)
+              maxLng = Math.max(maxLng, lng)
+              minLat = Math.min(minLat, lat)
+              maxLat = Math.max(maxLat, lat)
+            })
+          }
+        })
+      } else if (Array.isArray(coords[0])) {
+        // Array of coordinates (LineString, etc.)
+        coords.forEach(coord => {
+          const [lng, lat] = coord
+          minLng = Math.min(minLng, lng)
+          maxLng = Math.max(maxLng, lng)
+          minLat = Math.min(minLat, lat)
+          maxLat = Math.max(maxLat, lat)
+        })
+      } else {
+        // Single coordinate (Point)
+        const [lng, lat] = coords
+        minLng = Math.min(minLng, lng)
+        maxLng = Math.max(maxLng, lng)
+        minLat = Math.min(minLat, lat)
+        maxLat = Math.max(maxLat, lat)
+      }
+    }
+
+    geojson.features.forEach(feature => {
+      if (feature.geometry) {
+        const { type, coordinates } = feature.geometry
+        switch (type) {
+          case 'Point':
+            processCoordinates(coordinates)
+            break
+          case 'MultiPoint':
+          case 'LineString':
+            coordinates.forEach(coord => processCoordinates(coord))
+            break
+          case 'MultiLineString':
+          case 'Polygon':
+            coordinates.forEach(ring => processCoordinates(ring))
+            break
+          case 'MultiPolygon':
+            coordinates.forEach(polygon => {
+              polygon.forEach(ring => processCoordinates(ring))
+            })
+            break
+        }
+      }
+    })
+
+    // Add some padding
+    const padding = 0.01
+    return [
+      [minLng - padding, minLat - padding],
+      [maxLng + padding, maxLat + padding]
+    ]
+  }
+
+  // Function to zoom to a specific layer
+  const zoomToLayer = async (layerId, showPopup = true) => {
+    const bounds = layerBounds[layerId]
+    const layer = layers.find(l => l.id === layerId)
+    
+    if (!bounds || !mapRef.current) {
+      console.log(`No bounds available for layer: ${layerId}`)
+      return false
+    }
+
+    try {
+      // Mark this layer as recently zoomed
+      setRecentlyZoomedLayers(prev => new Set([...prev, layerId]))
+      
+      // Remove from recently zoomed after 3 seconds
+      setTimeout(() => {
+        setRecentlyZoomedLayers(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(layerId)
+          return newSet
+        })
+      }, 3000)
+
+      await new Promise((resolve) => {
+        mapRef.current.fitBounds(bounds, {
+          padding: 50,
+          duration: 1500,
+          maxZoom: 16
+        }, resolve)
+      })
+
+      if (showPopup) {
+        setPopupInfo({
+          lngLat: {
+            lng: (bounds[0][0] + bounds[1][0]) / 2,
+            lat: (bounds[0][1] + bounds[1][1]) / 2
+          },
+          properties: { message: `Zoomed to ${layer?.name || layerId}` },
+          layerName: "Layer Zoom"
+        })
+
+        setTimeout(() => {
+          setPopupInfo(null)
+        }, 3000)
+      }
+
+      return true
+
+    } catch (error) {
+      console.error('Error zooming to layer:', error)
+      return false
+    }
+  }
+
+  // Function to zoom to all visible layers
+  const zoomToAllLayers = () => {
+    const allBounds = Object.values(layerBounds).filter(bounds => bounds !== null)
+    
+    if (allBounds.length === 0 || !mapRef.current) {
+      console.log('No layers with bounds available')
+      return
+    }
+
+    // Calculate combined bounds
+    let combinedBounds = allBounds[0]
+    allBounds.forEach(bounds => {
+      combinedBounds = [
+        [
+          Math.min(combinedBounds[0][0], bounds[0][0]),
+          Math.min(combinedBounds[0][1], bounds[0][1])
+        ],
+        [
+          Math.max(combinedBounds[1][0], bounds[1][0]),
+          Math.max(combinedBounds[1][1], bounds[1][1])
+        ]
+      ]
+    })
+
+    try {
+      mapRef.current.fitBounds(combinedBounds, {
+        padding: 50,
+        duration: 2000,
+        maxZoom: 12
+      })
+
+      setPopupInfo({
+        lngLat: {
+          lng: (combinedBounds[0][0] + combinedBounds[1][0]) / 2,
+          lat: (combinedBounds[0][1] + combinedBounds[1][1]) / 2
+        },
+        properties: { message: `Zoomed to all ${allBounds.length} layers` },
+        layerName: "All Layers"
+      })
+
+      setTimeout(() => setPopupInfo(null), 3000)
+
+    } catch (error) {
+      console.error('Error zooming to all layers:', error)
+    }
+  }
+
+  // Auto-zoom immediately when a layer finishes loading
+  useEffect(() => {
+    // Check each layer that has bounds but hasn't been zoomed to yet
+    layers.forEach(layer => {
+      if (layerBounds[layer.id] && 
+          loadedLayers[layer.id] && 
+          !recentlyZoomedLayers.has(layer.id) &&
+          !loading[layer.id]) {
+        console.log(`Auto-zooming to newly loaded layer: ${layer.id}`)
+        zoomToLayer(layer.id, true)
+      }
+    })
+  }, [layerBounds, loadedLayers, layers])
+
   const searchLocation = async (query) => {
     if (!query.trim()) {
       setSearchResults([])
@@ -32,18 +223,15 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
 
     setIsSearching(true)
     try {
-      // West Africa bounding box:
-      // West: -17.5, South: 4.0, East: 15.0, North: 25.0
-      const viewbox = "-17.5,25.0,15.0,4.0" // format: left,top,right,bottom
-
+      const viewbox = "-17.5,25.0,15.0,4.0"
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?` +
           `format=json` +
           `&q=${encodeURIComponent(query)}` +
           `&viewbox=${viewbox}` +
-          `&bounded=1` + // Restrict results to viewbox
+          `&bounded=1` +
           `&limit=5` +
-          `&countrycodes=bj,bf,cv,ci,gm,gh,gn,gw,lr,ml,mr,ne,ng,sn,sl,tg`, // West African country codes
+          `&countrycodes=bj,bf,cv,ci,gm,gh,gn,gw,lr,ml,mr,ne,ng,sn,sl,tg`,
       )
       const results = await response.json()
       setSearchResults(results)
@@ -58,12 +246,11 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       searchLocation(searchQuery)
-    }, 500) // 500ms debounce
+    }, 500)
 
     return () => clearTimeout(timeoutId)
   }, [searchQuery])
 
-  // Fly to selected location
   const flyToLocation = (result) => {
     if (mapRef.current) {
       mapRef.current.flyTo({
@@ -72,11 +259,9 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
         duration: 1500,
       })
 
-      // Clear search and results after selection
       setSearchQuery("")
       setSearchResults([])
 
-      // Optional: Show popup for the searched location
       setPopupInfo({
         lngLat: { lng: Number.parseFloat(result.lon), lat: Number.parseFloat(result.lat) },
         properties: { name: result.display_name },
@@ -121,10 +306,10 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
         return {
           type: "circle",
           paint: {
-            "circle-radius": 6,
+            "circle-radius": 4,
             "circle-color": baseColor,
             "circle-opacity": 0.8,
-            "circle-stroke-width": 2,
+            "circle-stroke-width": 1,
             "circle-stroke-color": "#ffffff",
           },
         }
@@ -155,10 +340,20 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
       const geojson = await response.json()
       console.log(`Loaded ${geojson.features?.length || 0} features for ${layer.id}`)
 
+      // Calculate and store bounds for this layer
+      const bounds = calculateBounds(geojson)
+      if (bounds) {
+        setLayerBounds(prev => ({
+          ...prev,
+          [layer.id]: bounds
+        }))
+      }
+
       setLoadedLayers((prev) => ({
         ...prev,
         [layer.id]: geojson,
       }))
+
     } catch (error) {
       console.error(`Failed to load layer ${layer.id}:`, error)
     } finally {
@@ -166,7 +361,18 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
     }
   }
 
-  // Load all layers
+  // Function to select and load a layer with auto-zoom
+  const selectLayer = (layer) => {
+    if (loadedLayers[layer.id]) {
+      // Layer already loaded, just zoom to it
+      zoomToLayer(layer.id, true)
+    } else {
+      // Load layer and it will auto-zoom when loaded
+      loadLayerData(layer)
+    }
+  }
+
+  // Load all layers initially - they will auto-zoom as they load
   useEffect(() => {
     layers.forEach((layer) => {
       loadLayerData(layer)
@@ -207,6 +413,7 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
 
   return (
     <div className="w-full h-full relative">
+      {/* Search Box */}
       <div className="absolute top-4 left-4 z-20 bg-white rounded-lg shadow-lg p-2 min-w-80">
         <div className="relative">
           <input
@@ -223,7 +430,6 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
           )}
         </div>
 
-        {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="mt-2 max-h-60 overflow-y-auto">
             {searchResults.map((result, index) => (
@@ -306,22 +512,67 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
         )}
       </Map>
 
-      {/* Debug panel */}
+      {/* Layer Information Panel */}
       <div className="absolute top-4 right-8 bg-black/90 text-white p-4 rounded text-sm max-w-md z-10">
-        <div className="font-bold mb-2">🧭Display layer information</div>
-        <div>
+        <div className="font-bold mb-2">🗺️ Layer Controls</div>
+        
+        {/* Zoom to All Button */}
+        <button
+          onClick={zoomToAllLayers}
+          disabled={Object.keys(layerBounds).length === 0}
+          className="w-full mb-3 px-3 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 rounded text-xs font-medium transition-colors"
+        >
+          🔍 Zoom to All Layers
+        </button>
+
+        <div className="mb-2">
           Layers: {Object.keys(loadedLayers).length}/{layers.length} loaded
         </div>
 
-        {layers.map((layer) => (
-          <div key={layer.id} className="flex items-center mt-1 text-xs">
-            <div className="w-3 h-3 mr-2 rounded-full" style={{ backgroundColor: layer.color || "#FF6B6B" }}></div>
-            <span>
-              {layer.name} - {loadedLayers[layer.id]?.features?.length || 0} features
-              {loading[layer.id] && " (loading...)"}
-            </span>
+        {/* Auto-zoom status */}
+        {recentlyZoomedLayers.size > 0 && (
+          <div className="mb-3 p-2 bg-blue-500 rounded text-xs">
+            ⚡ Auto-zoomed to {recentlyZoomedLayers.size} layer(s)
           </div>
-        ))}
+        )}
+
+        {layers.map((layer) => {
+          const hasBounds = !!layerBounds[layer.id]
+          const isLoading = loading[layer.id]
+          const isLoaded = !!loadedLayers[layer.id]
+          const wasRecentlyZoomed = recentlyZoomedLayers.has(layer.id)
+          
+          return (
+            <div key={layer.id} className="flex items-center justify-between mt-2 text-xs group">
+              <div className="flex items-center flex-1">
+                <div 
+                  className="w-3 h-3 mr-2 rounded-full flex-shrink-0" 
+                  style={{ backgroundColor: layer.color || "#FF6B6B" }}
+                ></div>
+                <span className="truncate flex-1">
+                  {layer.name} - {loadedLayers[layer.id]?.features?.length || 0} features
+                  {isLoading && " (loading...)"}
+                  {wasRecentlyZoomed && " (recently zoomed)"}
+                </span>
+              </div>
+              
+              <button
+                onClick={() => selectLayer(layer)}
+                disabled={isLoading}
+                className={`ml-2 px-2 py-1 rounded text-xs font-medium transition-colors flex-shrink-0 ${
+                  isLoading
+                    ? 'bg-gray-600 cursor-not-allowed' 
+                    : isLoaded 
+                    ? 'bg-green-500 hover:bg-green-600' 
+                    : 'bg-blue-500 hover:bg-blue-600'
+                }`}
+                title={isLoaded ? `Zoom to ${layer.name}` : `Load and zoom to ${layer.name}`}
+              >
+                {isLoading ? '...' : isLoaded ? 'Zoom' : 'Load'}
+              </button>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
