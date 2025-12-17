@@ -411,6 +411,34 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
     }
   }
 
+  const handleHover = (event) => {
+  if (!mapRef.current) return
+
+  const features = mapRef.current.queryRenderedFeatures(event.point, {
+    layers: layers.map(layer => `${layer.id}-layer`)
+  })
+
+  if (!features.length) {
+    setPopupInfo(null)
+    return
+  }
+
+  const feature = features[0]
+  const layer = layers.find(l => feature.source === l.id)
+
+  if (!layer) return
+
+  setPopupInfo({
+    lngLat: event.lngLat,
+    properties: feature.properties,
+    layerName: layer.name || layer.layer_name,
+  })
+}
+const handleMouseLeave = () => {
+  setPopupInfo(null)
+}
+
+
   return (
     <div className="w-full h-full relative">
       {/* Search Box */}
@@ -461,6 +489,9 @@ export default function GeoJSONMapComponent({ layers, onFeatureClick, initialVie
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         onClick={handleClick}
         interactiveLayerIds={layers.map((layer) => `${layer.id}-layer`)}
+
+         onMouseMove={handleHover}
+         onMouseLeave={handleMouseLeave}
       >
         {layers.map((layer) => {
           const styleConfig = getLayerStyle(layer)
