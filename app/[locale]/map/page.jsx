@@ -185,7 +185,7 @@ function MapContent() {
         />
 
         {/* Map and Info Panel - NEW: Pass selectedLayerId to MapComponent */}
-        <div className="flex-1 flex flex-col relative overflow-hidden z-0 max-w-6xl">
+        <div className="flex-1 flex flex-col relative overflow-hidden z-0 ">
           <MapComponent
             layers={visibleLayers}
             onFeatureClick={setSelectedFeature}
